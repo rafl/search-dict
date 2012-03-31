@@ -1,8 +1,10 @@
 #!./perl
 
-print "1..4\n";
+use strict;
+use Test::More;
+plan tests => 7;
 
-$DICT = <<EOT;
+my $DICT = <<EOT;
 Aarhus
 Aaron
 Ababa
@@ -39,44 +41,43 @@ open(DICT, "+>dict-$$") or die "Can't create dict-$$: $!";
 binmode DICT;			# To make length expected one.
 print DICT $DICT;
 
+my $word;
+
 my $pos = look *DICT, "Ababa";
 chomp($word = <DICT>);
-print "not " if $pos < 0 || $word ne "Ababa";
-print "ok 1\n";
+cmp_ok $pos, ">=", 0;
+is $word, "Ababa";
 
 if (ord('a') > ord('A') ) {  # ASCII
 
     $pos = look *DICT, "foo";
     $word = <DICT>;
 
-    print "not " if $pos != length($DICT);  # will search to end of file
-    print "ok 2\n";
+    is $pos, length($DICT);  # will search to end of file
 
     my $pos = look *DICT, "abash";
     chomp($word = <DICT>);
-    print "not " if $pos < 0 || $word ne "abash";
-    print "ok 3\n";
-
+    cmp_ok $pos, ">=", 0;
+    is $word, "abash";
 }
 else { # EBCDIC systems e.g. os390
 
     $pos = look *DICT, "FOO";
     $word = <DICT>;
 
-    print "not " if $pos != length($DICT);  # will search to end of file
-    print "ok 2\n";
+    is $pos, length($DICT);  # will search to end of file
 
     my $pos = look *DICT, "Abba";
     chomp($word = <DICT>);
-    print "not " if $pos < 0 || $word ne "Abba";
-    print "ok 3\n";
+    cmp_ok $pos, ">=", 0;
+    is $word, "Abba";
 }
 
 $pos = look *DICT, "aarhus", 1, 1;
 chomp($word = <DICT>);
 
-print "not " if $pos < 0 || $word ne "Aarhus";
-print "ok 4\n";
+cmp_ok $pos, ">=", 0;
+is $word, "Aarhus";
 
 close DICT or die "cannot close";
 unlink "dict-$$";
