@@ -2,7 +2,7 @@
 
 use strict;
 use Test::More;
-plan tests => 7;
+plan tests => 11;
 
 my $DICT = <<EOT;
 Aarhus
@@ -81,3 +81,23 @@ is $word, "Aarhus";
 
 close DICT or die "cannot close";
 unlink "dict-$$";
+
+{
+    open my $strfh, "<", \$DICT or die $!;
+
+    {
+	my $pos = look $strfh, 'Ababa';
+	chomp($word = <$strfh>);
+	cmp_ok $pos, ">=", 0;
+	is $word, "Ababa";
+    }
+
+    {
+	my $pos = look $strfh, "aarhus", 1, 1;
+	chomp($word = <$strfh>);
+	cmp_ok $pos, ">=", 0;
+	is $word, "Aarhus";
+    }
+
+    close $strfh;
+}
