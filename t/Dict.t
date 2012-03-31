@@ -47,7 +47,7 @@ print "ok 1\n";
 if (ord('a') > ord('A') ) {  # ASCII
 
     $pos = look *DICT, "foo";
-    chomp($word = <DICT>);
+    $word = <DICT>;
 
     print "not " if $pos != length($DICT);  # will search to end of file
     print "ok 2\n";
@@ -61,7 +61,7 @@ if (ord('a') > ord('A') ) {  # ASCII
 else { # EBCDIC systems e.g. os390
 
     $pos = look *DICT, "FOO";
-    chomp($word = <DICT>);
+    $word = <DICT>;
 
     print "not " if $pos != length($DICT);  # will search to end of file
     print "ok 2\n";
