@@ -60,9 +60,16 @@ sub look {
     }
     $comp = sub { $_[0] cmp $_[1] } unless defined $comp;
     local($_);
-    my(@stat) = stat($fh)
-	or return -1;
-    my($size, $blksize) = @stat[7,11];
+    my($size, $blksize);
+    if (my(@stat) = stat($fh)) {
+	($size, $blksize) = @stat[7,11];
+    } else {
+	if (seek($fh, 0, 2)) {
+	    $size = tell $fh;
+	    seek($fh, 0, 0);
+	}
+	return -1 if !defined $size;
+    }
     $blksize ||= 8192;
     $key =~ s/[^\w\s]//g if $dict;
     $key = lc $key       if $fold;
